@@ -1,0 +1,45 @@
+
+application:
+  name: E-WardApplication
+
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/e-warddb
+    username: postgres
+    password: kooks
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none   # Using Flyway for migrations
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          lob:
+            non_contextual_creation: true
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+# JWT configuration
+security:
+  jwt:
+    secret: very-secret-change-me-at-deploy-time-please
+    expiration-ms: 86400000 # 24 hours in ms
+
+# Springdoc OpenAPI (Swagger) configuration
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    root: INFO
+    org.hibernate.SQL: DEBUG
+
