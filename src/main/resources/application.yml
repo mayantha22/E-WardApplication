@@ -31,6 +31,14 @@ security:
     secret: very-secret-change-me-at-deploy-time-please
     expiration-ms: 86400000 # 24 hours in ms
 
+#STAFF API TESTING PURPOSE ONLY
+#  security:
+#    user:
+#      name: admin
+#      password: admin123
+#      roles: ADMIN
+
+
 # Springdoc OpenAPI (Swagger) configuration
 springdoc:
   api-docs:
