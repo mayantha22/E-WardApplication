@@ -9,3 +9,5 @@ public interface UserService {
     Optional<UserDTO> findByUsername(String username);
     UserDTO getById(Long id);
 }
+
+//STRING , INT ,DOU[
