@@ -28,7 +28,7 @@ public class PatientServiceImpl implements PatientService {
     private final PatientUpdateRepository patientUpdateRepository;
     private final StaffRepository staffRepository;
     private final AppUserRepository appUserRepository;
-    private  NotificationService notificationService;
+    private final NotificationService notificationService;
 
     @Override
     public PatientDTO createPatient(PatientDTO dto) {
