@@ -1,0 +1,5 @@
+ALTER TABLE patient ADD COLUMN address VARCHAR(255);
+ALTER TABLE staff ADD COLUMN address VARCHAR(255);
+
+
+
