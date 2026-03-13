@@ -42,4 +42,12 @@ public class ChangeRequest {
     private AppUser decidedBy;
 
     private Instant createdAt = Instant.now();
+
+    // UPDATED FIELDS FOR SWAP THING
+    private String requestType; // ADMIN_APPROVAL (existing), DIRECT, INDIRECT
+    private String shiftFrom;
+    private String shiftTo;
+
+    @Column(columnDefinition = "jsonb")
+    private String additionalPayload; // keep JSON as String for simplicity
 }

@@ -42,4 +42,10 @@ public class AppUser {
         ADMIN, STAFF
     }
 
+    @Column(length = 100)
+    private String resetPasswordToken;
+
+    @Column
+    private Instant resetPasswordTokenExpiry;
+
 }

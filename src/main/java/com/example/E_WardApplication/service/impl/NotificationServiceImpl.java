@@ -14,6 +14,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -60,6 +61,14 @@ public class NotificationServiceImpl implements NotificationService {
         Notification n = notificationRepository.findById(notificationId).orElseThrow(() -> new RuntimeException("Notification not found"));
         n.setRead(true);
         notificationRepository.save(n);
+    }
+
+    @Override
+    public void deleteNotification(Long notificationId) {
+        if (!notificationRepository.existsById(notificationId)) {
+            throw new RuntimeException("Notification not found");
+        }
+        notificationRepository.deleteById(notificationId);
     }
 
     private NotificationDTO toDto(Notification n) {

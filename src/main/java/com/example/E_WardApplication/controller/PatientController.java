@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/api/patients")
@@ -49,8 +50,13 @@ public class PatientController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
-    @PostMapping("/{id}/transfer")
-    public ResponseEntity<PatientDTO> transfer(@PathVariable Long id, @RequestParam String targetWard, @RequestParam(required = false) Long performedByUserId) {
-        return ResponseEntity.ok(patientService.transferPatient(id, targetWard, performedByUserId));
+    @PostMapping("/{patientId}/transfer")
+    public ResponseEntity<PatientDTO> transfer(
+            @PathVariable Long patientId,
+            @RequestParam String targetWard) { // ✅ No need for userId
+
+        PatientDTO dto = patientService.transferPatient(patientId, targetWard, null);
+        return ResponseEntity.ok(dto);
     }
+
 }

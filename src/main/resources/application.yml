@@ -39,6 +39,22 @@ security:
 #      roles: ADMIN
 
 
+#email service
+  spring:
+    mail:
+      host: smtp.gmail.com
+      port: 587
+      username: ewardsystem@gmail.com
+      password: obwtbygfonjoqrvy
+      properties:
+        mail:
+          smtp:
+            auth: true
+            starttls:
+              enable: true
+
+
+
 # Springdoc OpenAPI (Swagger) configuration
 springdoc:
   api-docs:

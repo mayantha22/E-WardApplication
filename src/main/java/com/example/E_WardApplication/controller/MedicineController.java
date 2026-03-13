@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/medicines")
 @RequiredArgsConstructor
@@ -53,5 +54,12 @@ public class MedicineController {
     public ResponseEntity<MedicineInventoryDTO> adjust(@PathVariable Long id, @RequestParam int delta) {
         return ResponseEntity.ok(service.adjustStock(id, delta));
     }
+
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
+    @GetMapping("/report/low-stock")
+    public ResponseEntity<List<MedicineInventoryDTO>> getLowStock() {
+        return ResponseEntity.ok(service.getLowStockMedicines());
+    }
+
 
 }

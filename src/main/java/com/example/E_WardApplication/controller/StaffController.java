@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/staff")
 @RequiredArgsConstructor
@@ -47,4 +48,14 @@ public class StaffController {
     public ResponseEntity<List<staffDTO>> list() {
         return ResponseEntity.ok(staffService.getAllStaff());
     }
+
+    // ✅ NEW — fetch staff info by linked userId
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
+    @GetMapping("/by-user/{userId}")
+    public ResponseEntity<staffDTO> getByUserId(@PathVariable Long userId) {
+        staffDTO staff = staffService.getByUserId(userId);
+        return ResponseEntity.ok(staff);
+    }
 }
+
+

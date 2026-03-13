@@ -11,5 +11,7 @@ public interface NotificationService {
     void createNotificationForRole(String roleName, String message, String type);
     List<NotificationDTO> getNotificationsForUser(Long userId);
     void markAsRead(Long notificationId);
+    void deleteNotification(Long notificationId);
+
 
 }

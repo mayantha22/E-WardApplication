@@ -31,6 +31,9 @@ public class Patient {
     private String nic;
     private String contact;
 
+    @Column(name = "address", length = 255)
+    private String address;
+
     private Instant admissionDate;
     private Instant dischargeDate;
 

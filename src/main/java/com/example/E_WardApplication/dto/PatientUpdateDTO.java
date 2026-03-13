@@ -1,12 +1,22 @@
 package com.example.E_WardApplication.dto;
 
-import lombok.Data;
-import java.util.List;
+import lombok.*;
+import java.time.Instant;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class PatientUpdateDTO {
     private Long id;
-    private String currentStatus;
-    private List<String> medicines;
-    private List<String> meals;
+    private Long patientId;       // from Patient
+    private Instant updateDate;
+    private String summary;
+    private Instant createdAt;
+
+    private Long recordedById;
+    private String recordedByName;   // from AppUser.fullName
+    //private String recorderUsername;
+
 }
