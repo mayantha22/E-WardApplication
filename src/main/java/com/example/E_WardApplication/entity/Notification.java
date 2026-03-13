@@ -26,7 +26,7 @@ public class Notification {
     private String message;
 
     private String type;
-    private boolean isRead = false;
+    private boolean isRead ;
 
     private Instant createdAt = Instant.now();
 }

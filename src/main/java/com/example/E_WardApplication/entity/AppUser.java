@@ -41,4 +41,5 @@ public class AppUser {
     public enum Role {
         ADMIN, STAFF
     }
+
 }

@@ -1,7 +1,9 @@
 package com.example.E_WardApplication.dto;
 
 import lombok.Data;
-import java.time.LocalDateTime;
+
+import java.time.Instant;
+//import java.time.LocalDateTime;
 
 @Data
 public class NotificationDTO {
@@ -9,6 +11,7 @@ public class NotificationDTO {
     private String message;
     private String type; // INFO, WARNING, ERROR
     private Long recipientId;
-    private LocalDateTime date;
+    private boolean isRead;
+    private Instant createdAt;
 
 }
