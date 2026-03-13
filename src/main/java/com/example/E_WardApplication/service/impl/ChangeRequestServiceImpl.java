@@ -39,6 +39,7 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                 .reason(dto.getReason())
                 .status("PENDING")
                 .requestDate(Instant.now())
+                .requestType("ADMIN_APPROVAL") // <<< minimal additive field set
                 .build();
 
         ChangeRequest saved = repository.save(cr);
@@ -72,7 +73,7 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         notificationService.createNotification(cr.getFromStaff().getUser().getId(), "Your duty change request was APPROVED", "DUTY_CHANGE_DECISION");
         notificationService.createNotification(cr.getToStaff().getUser().getId(), "Duty change request involving you was APPROVED", "DUTY_CHANGE_DECISION");
 
-        // Optionally: update duty roster data to reflect the swap. This is domain specific; left as manual step or later enhancement.
+        // Optionally: update-duty roster data to reflect the swap. Left as manual or separate enhancement.
 
         return toDto(saved);
     }
@@ -106,6 +107,4 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         dto.setDecidedById(cr.getDecidedBy() != null ? cr.getDecidedBy().getId() : null);
         return dto;
     }
-
-
 }

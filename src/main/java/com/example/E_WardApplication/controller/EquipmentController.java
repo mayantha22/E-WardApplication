@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/equipment")
 @RequiredArgsConstructor
@@ -52,6 +53,13 @@ public class EquipmentController {
     public ResponseEntity<EquipmentInventoryDTO> adjust(@PathVariable Long id, @RequestParam int delta) {
         return ResponseEntity.ok(service.adjustStock(id, delta));
     }
+
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
+    @GetMapping("/report/low-stock")
+    public ResponseEntity<List<EquipmentInventoryDTO>> getLowStockEquipment() {
+        return ResponseEntity.ok(service.getLowStockEquipment());
+    }
+
 
 
 

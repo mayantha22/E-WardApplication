@@ -32,22 +32,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-//        try {
-//            String jwt = getJwtFromRequest(request);
-//            if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-//                String username = tokenProvider.getUsernameFromToken(jwt);
-//                if (username != null) {
-//                    UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
-//                    UsernamePasswordAuthenticationToken authentication =
-//                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-//                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-//                    SecurityContextHolder.getContext().setAuthentication(authentication);
-//                }
-//            }
-//        } catch (Exception ex) {
-//            // In case of any exception, clear context and continue — JwtAuthenticationEntryPoint will handle unauthorized responses for protected endpoints.
-//            SecurityContextHolder.clearContext();
-//        }
 
 //LOGGER FOR TEST
         try {

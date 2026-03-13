@@ -12,5 +12,7 @@ public interface EquipmentInventoryService {
     List<EquipmentInventoryDTO> getAll();
     void delete(Long id);
     EquipmentInventoryDTO adjustStock(Long id, int delta);
+    List<EquipmentInventoryDTO> getLowStockEquipment();
+
 
 }

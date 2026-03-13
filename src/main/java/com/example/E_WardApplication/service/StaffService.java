@@ -10,4 +10,5 @@ public interface StaffService {
     staffDTO getStaffById(Long id);
     List<staffDTO> getAllStaff();
     void deleteStaff(Long id);
+    staffDTO getByUserId(Long userId); // ✅ newly added
 }

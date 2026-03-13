@@ -12,6 +12,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 @Service
 @RequiredArgsConstructor
 public class MedicineInventoryServiceImpl implements MedicineInventoryService {
@@ -81,6 +82,17 @@ public class MedicineInventoryServiceImpl implements MedicineInventoryService {
             notificationService.createNotificationForRole("ADMIN", msg, "LOW_STOCK");
         }
     }
+
+    //for report generation
+    @Override
+    public List<MedicineInventoryDTO> getLowStockMedicines() {
+        return medicineRepository.findAll().stream()
+                .filter(m -> m.getQuantity() <= m.getThreshold())
+                .map(this::toDto) // use your existing toDto() method
+                .collect(Collectors.toList()); // safer for Java 8/11 compatibility
+    }
+
+
 
     private MedicineInventoryDTO toDto(MedicineInventory m) {
         MedicineInventoryDTO dto = new MedicineInventoryDTO();

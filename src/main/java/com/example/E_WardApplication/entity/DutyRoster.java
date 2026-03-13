@@ -31,5 +31,6 @@ public class DutyRoster {
     @Column(columnDefinition = "jsonb")
     private Map<String, Object> data; // JSON string for assignments
 
+
     private Instant createdAt = Instant.now();
 }

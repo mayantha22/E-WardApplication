@@ -12,6 +12,7 @@ public class PatientDTO {
     private String fullName;
     private String nic;
     private String contact;
+    private String address;
     private LocalDate admissionDate;
     private LocalDate dischargeDate;
     private String assignedWard;

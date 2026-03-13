@@ -13,6 +13,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -81,6 +82,15 @@ public class EquipmentInventoryServiceImpl implements EquipmentInventoryService 
             notificationService.createNotificationForRole("ADMIN", msg, "LOW_STOCK");
         }
     }
+
+    @Override
+    public List<EquipmentInventoryDTO> getLowStockEquipment() {
+        return repository.findAll().stream()
+                .filter(e -> e.getQuantity() <= e.getThreshold())
+                .map(this::toDto) // assuming you also have a toDto() method for equipment
+                .collect(Collectors.toList());
+    }
+
 
     private EquipmentInventoryDTO toDto(EquipmentInventory e) {
         EquipmentInventoryDTO dto = new EquipmentInventoryDTO();

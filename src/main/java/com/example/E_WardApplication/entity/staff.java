@@ -30,6 +30,10 @@ public class staff {
     private String phone;
     private String designation;
     private String ward;
+    private String email;
+
+    @Column(name = "address", length = 255)
+    private String address;
 
     private int leaveCount = 0;
     private int nightDutyCount = 0;
@@ -37,6 +41,6 @@ public class staff {
     @Column(nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 
-    @OneToMany(mappedBy = "recordedBy", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PatientUpdate> patientUpdates;
+//    @OneToMany(mappedBy = "recordedBy", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<PatientUpdate> patientUpdates;
 }

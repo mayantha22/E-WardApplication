@@ -11,6 +11,7 @@ public interface MedicineInventoryService {
     MedicineInventoryDTO getById(Long id);
     List<MedicineInventoryDTO> getAll();
     void delete(Long id);
+    List<MedicineInventoryDTO> getLowStockMedicines();
 
     // adjust stock (positive or negative delta)
     MedicineInventoryDTO adjustStock(Long id, int delta);

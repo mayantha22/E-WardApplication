@@ -10,6 +10,8 @@ import com.example.E_WardApplication.repository.StaffRepository;
 import com.example.E_WardApplication.service.NotificationService;
 import com.example.E_WardApplication.service.PatientService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +39,7 @@ public class PatientServiceImpl implements PatientService {
                 .fullName(dto.getFullName())
                 .nic(dto.getNic())
                 .contact(dto.getContact())
+                .address(dto.getAddress())
                 .admissionDate(Instant.now())
                 .assignedWard(dto.getAssignedWard())
                 .status(dto.getStatus())
@@ -52,6 +55,7 @@ public class PatientServiceImpl implements PatientService {
         p.setFullName(dto.getFullName());
         p.setNic(dto.getNic());
         p.setContact(dto.getContact());
+        p.setAddress(dto.getAddress());
         p.setStatus(dto.getStatus());
         p.setNotes(dto.getNotes());
         p.setAssignedWard(dto.getAssignedWard());
@@ -74,30 +78,67 @@ public class PatientServiceImpl implements PatientService {
         patientRepository.deleteById(id);
     }
 
+
     @Override
-    public PatientDTO transferPatient(Long patientId, String targetWard, Long performedByUserId) {
-        Patient p = patientRepository.findById(patientId).orElseThrow(() -> new RuntimeException("Patient not found"));
+    public PatientDTO transferPatient(Long patientId, String targetWard, Long ignoredUserId) {
+        Patient p = patientRepository.findById(patientId)
+                .orElseThrow(() -> new RuntimeException("Patient not found"));
+
         String previousWard = p.getAssignedWard();
         p.setAssignedWard(targetWard);
         Patient saved = patientRepository.save(p);
 
-        // Create a patient update record describing transfer
+        // ✅ Get logged-in user
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+
+        var performedBy = appUserRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Logged-in user not found"));
+
+        // Create update entry
         PatientUpdate pu = PatientUpdate.builder()
                 .patient(p)
                 .summary("Transferred from ward: " + previousWard + " to: " + targetWard)
                 .updateDate(Instant.now())
+                .recordedBy(performedBy)
                 .build();
         patientUpdateRepository.save(pu);
 
-        // Notify ward admin / performedBy user if exists
-        if (performedByUserId != null) {
-            appUserRepository.findById(performedByUserId).ifPresent(user -> {
-                notificationService.createNotification(user.getId(), "Patient " + p.getFullName() + " transferred to " + targetWard, "PATIENT_TRANSFER");
-            });
-        }
+        // Send notification
+        notificationService.createNotification(
+                performedBy.getId(),
+                "Patient " + p.getFullName() + " transferred to " + targetWard,
+                "PATIENT_TRANSFER"
+        );
 
         return toDto(saved);
     }
+
+
+//    @Override
+//    public PatientDTO transferPatient(Long patientId, String targetWard, Long performedByUserId) {
+//        Patient p = patientRepository.findById(patientId).orElseThrow(() -> new RuntimeException("Patient not found"));
+//        String previousWard = p.getAssignedWard();
+//        p.setAssignedWard(targetWard);
+//        Patient saved = patientRepository.save(p);
+//
+//        // Create a patient update record describing transfer
+//        PatientUpdate pu = PatientUpdate.builder()
+//                .patient(p)
+//                .summary("Transferred from ward: " + previousWard + " to: " + targetWard)
+//                .updateDate(Instant.now())
+//                .build();
+//        patientUpdateRepository.save(pu);
+//
+//        // Notify ward admin / performedBy user if exists
+//        if (performedByUserId != null) {
+//            appUserRepository.findById(performedByUserId).ifPresent(user -> {
+//                notificationService.createNotification(user.getId(), "Patient " + p.getFullName() + " transferred to " + targetWard, "PATIENT_TRANSFER");
+//            });
+//        }
+//
+//        return toDto(saved);
+//    }
 
     private PatientDTO toDto(Patient p) {
         PatientDTO dto = new PatientDTO();
@@ -106,6 +147,7 @@ public class PatientServiceImpl implements PatientService {
         dto.setFullName(p.getFullName());
         dto.setNic(p.getNic());
         dto.setContact(p.getContact());
+        dto.setAddress(p.getAddress());
         dto.setAssignedWard(p.getAssignedWard());
         dto.setStatus(p.getStatus());
         dto.setNotes(p.getNotes());

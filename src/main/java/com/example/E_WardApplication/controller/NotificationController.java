@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/notifications")
 @RequiredArgsConstructor
@@ -27,6 +28,12 @@ public class NotificationController {
     public ResponseEntity<Void> markAsRead(@PathVariable Long id) {
         service.markAsRead(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        service.deleteNotification(id);
+        return ResponseEntity.ok().build();
     }
 
 
