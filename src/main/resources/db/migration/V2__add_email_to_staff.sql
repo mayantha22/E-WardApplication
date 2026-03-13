@@ -1,0 +1,3 @@
+ALTER TABLE staff
+ADD COLUMN email VARCHAR(200);
+
