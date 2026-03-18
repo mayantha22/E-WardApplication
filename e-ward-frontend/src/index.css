@@ -1,0 +1,46 @@
+/* Page Background & Typography */
+body {
+  background-color: #f8f9fa; /* Subtle grey-blue background */
+  color: #334155;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Soft Shadow Card System */
+.card {
+  border: none;
+  border-radius: 12px; /* Consistent 12-16px rounding */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-bottom: 24px;
+}
+
+/* Professional Table Styling */
+.table {
+  border-collapse: separate;
+  border-spacing: 0 8px; /* Spacing between rows */
+}
+
+.table tr {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.table tbody tr:hover {
+  background-color: #ffffff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+}
+
+.table td {
+  padding: 16px;
+  vertical-align: middle;
+  background-color: #fff;
+}
+
+.table td:first-child { border-radius: 8px 0 0 8px; }
+.table td:last-child { border-radius: 0 8px 8px 0; }
+
+/* Transitions for buttons */
+.btn {
+  transition: all 0.3s ease;
+  font-weight: 500;
+}

@@ -1,0 +1,573 @@
+you see her we didnt use the change rq entitoy at all so we can perfeorme all the swap thing with swap rq and swap audit eneotoes.
+(maybe its basoically safe to remove the change rq eneoty at all)
+
+thier is approvel ad  rejections oon backedn 
+and alow apply swap to roster methods in backedn 
+but we deidnt use any swap appply thing in the frint end 
+lets calll all the abve wanted funcgions to froint eed and make this 
+we can makesone adin thing to appporvek and staff 
+i suggest to make a new wiinddow to arovel and thing do e we can go with new page go do thiis stuff 
+
+
+here is what i need to do with my project currently this project have 3 options for users to swap ther duty those are
+direct
+indirect
+admin aprovel 
+
+user can make rq and submit but its not complete this is what i neeed to add to my code 
+when user make swap rq user can selec the spcific user to swap thire rq but ther is no part to select specifc duty date to swap when user select partocullar user to swap thier rq thta moment user can select that spcofic users duty slot also.
+
+another part is when user make rq to swap thta particullar user and admins should have reject or accept that rq make sutable way to do thta
+
+when tta user or admin apprive thta swap in thta momment duty rpster should have update automatically 
+
+
+//
+
+thing is did you see the entites of swaprq has originalshoft data , shift  and requested shift data and shift. why do you add traget shift data and shift again we can use thta requsted shift data and shift for thta roght those has same data roght??
+if im worng tell me about tthat
+
+when the admin assign target slow wprkflow for for indirect swaping
+indirect swapping - user can make rq to swap thier shift, then admin can see the traget slots and availabke slots and assign them for thta aprticullar slot
+
+
+when user make swap
+when he slect particullar user to select 
+it should shows his slots (like if some u slex x users to swap x 
+and x could be in may slots inthe  same oneth same roster all slots thta x in willl show the below . then user can slect thta rswaping thing an dg ahed)
+
+they fetch same data for requested shift and origina shft 
+we have to edit it as orgianl shoft fr requester an drequsted shift as the sected user .
+requested shoft data need to replace as a traget sghfts
+
+there are 3 options in swap rq feature 
+1. admin approvel 
+2. direct approvel(manual communication)
+3. indrect approvel - user can make rq to swap his duty -- no need to assign another user
+(admin will see the rq and assign him to another user)
+
+in this process after the swap happens the duty roster will automatically update.
+
+we have the 
+api.js 
+authservice.js 
+ we have the team or the extra in the city we alredy have the tea fir the game we have played for thr trma we are in the city are we in the game we have the city we are in the gae we have the city we are already on te game we e chn age request . servoe o t epatinetSERVICE.JJS DE FE     BT G FG     
+ 
+
+ then **
+ their is worked apis to 3 kid of swaps . now i need to add swap approvel and rejetion after that roser may updETD AUTOMATICALLY THA SWHY I NEED TO D 
+
+ APPROVEL MUST BE DO IN TWO WAYS 
+ ONE FROM ADMON AND ANOTHER ONE FROM SPECIF USER WHO GOT THE SWAP RQ FROM HIS STAFF MEMEBER
+
+31/01/2026
+lets make workflow for thing we need to complete-
+
+here is my swap contollers -
+package com.example.E_WardApplication.controller;
+
+import com.example.E_WardApplication.dto.DirectSwapCreateDTO;
+import com.example.E_WardApplication.dto.SwapRequestDTO;
+import com.example.E_WardApplication.service.SwapRequestService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/swaps")
+@RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000")
+public class SwapRequestController {
+
+    private final SwapRequestService service;
+
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
+    @PostMapping("/direct")
+    public ResponseEntity<SwapRequestDTO> createDirect(@RequestBody DirectSwapCreateDTO dto) {
+        return ResponseEntity.ok(service.createDirectSwap(dto));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
+    @PostMapping("/admin-direct")
+    public ResponseEntity<SwapRequestDTO> createAdminDirect(@RequestBody DirectSwapCreateDTO dto) {
+        return ResponseEntity.ok(service.createAdminDirectSwap(dto));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
+    @PostMapping("/indirect")
+    public ResponseEntity<SwapRequestDTO> createIndirect(@RequestBody DirectSwapCreateDTO dto) {
+        return ResponseEntity.ok(service.createIndirectSwap(dto));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
+    @PostMapping("/{id}/peer-approve")
+    public ResponseEntity<SwapRequestDTO> peerApprove(@PathVariable Long id, @RequestParam Long approverUserId) {
+        return ResponseEntity.ok(service.approvePeer(id, approverUserId));
+    }
+
+    //peer-reject
+    @PostMapping("/{id}/peer-reject")
+    @PreAuthorize("hasAnyRole('STAFF')")
+    public ResponseEntity<SwapRequestDTO> peerReject(
+            @PathVariable Long id,
+            @RequestParam Long approverUserId
+    ) {
+        return ResponseEntity.ok(service.rejectByPeer(id, approverUserId));
+    }
+
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/{id}/admin-approve")
+    public ResponseEntity<SwapRequestDTO> adminApprove(@PathVariable Long id, @RequestParam Long approverUserId) {
+        return ResponseEntity.ok(service.approveByAdmin(id, approverUserId));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/{id}/admin-reject")
+    public ResponseEntity<SwapRequestDTO> adminReject(@PathVariable Long id, @RequestParam Long approverUserId) {
+        return ResponseEntity.ok(service.rejectByAdmin(id, approverUserId));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
+    @GetMapping("/{id}")
+    public ResponseEntity<SwapRequestDTO> get(@PathVariable Long id) {
+        return ResponseEntity.ok(service.getById(id));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
+    @GetMapping
+    public ResponseEntity<List<SwapRequestDTO>> list() {
+        return ResponseEntity.ok(service.getAll());
+    }
+
+
+}
+
+and this is srvices for those api end points
+package com.example.E_WardApplication.service.impl;
+
+import com.example.E_WardApplication.dto.DirectSwapCreateDTO;
+import com.example.E_WardApplication.dto.SwapRequestDTO;
+import com.example.E_WardApplication.entity.*;
+import com.example.E_WardApplication.repository.*;
+import com.example.E_WardApplication.service.DutyRosterService;
+import com.example.E_WardApplication.service.SwapRequestService;
+import com.example.E_WardApplication.service.NotificationService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class SwapRequestServiceImpl implements SwapRequestService {
+
+    private final SwapRequestRepository swapRepo;
+    private final SwapAuditLogRepository auditRepo;
+    private final StaffRepository staffRepository;
+    private final AppUserRepository appUserRepository;
+    private final DutyRosterRepository rosterRepository;
+    private final NotificationService notificationService;
+    //NEW
+    private final DutyRosterService dutyRosterService;
+
+    //CREATESWAP
+    @Override
+    public SwapRequestDTO createDirectSwap(DirectSwapCreateDTO dto) {
+        staff requester = staffRepository.findById(dto.getRequesterStaffId()).orElseThrow(() -> new RuntimeException("Requester not found"));
+        staff target = staffRepository.findById(dto.getTargetStaffId()).orElseThrow(() -> new RuntimeException("Target not found"));
+
+
+        SwapRequest sr = SwapRequest.builder()
+                .requestType("DIRECT")
+                .requesterStaff(requester)
+                .targetStaff(target)
+                .originalShiftDate(dto.getOriginalShiftDate())
+                .originalShift(dto.getOriginalShift())
+                .requestedShiftDate(dto.getRequestedShiftDate())
+                .requestedShift(dto.getRequestedShift())
+                .peerApprovalStatus("PENDING")
+                .adminStatus("PENDING")
+                .reason(dto.getReason())
+                .requestMeta(dto.getRequestMeta())
+                .build();
+
+        SwapRequest saved = swapRepo.save(sr);
+        auditRepo.save(buildAudit(saved, "CREATED", requester.getUser().getId(), "Direct swap requested"));
+
+        notificationService.createNotification(target.getUser().getId(), "Swap request from " + requester.getUser().getFullName(), "SWAP_REQUEST");
+
+        return toDto(saved);
+    }
+
+    //CREATEREQUESTING TO ADMIN SWAP
+    @Override
+    public SwapRequestDTO  createAdminDirectSwap(DirectSwapCreateDTO dto) {
+        staff requester = staffRepository.findById(dto.getRequesterStaffId()).orElseThrow(() -> new RuntimeException("Requester not found"));
+        staff target = staffRepository.findById(dto.getTargetStaffId()).orElseThrow(() -> new RuntimeException("Target not found"));
+
+        SwapRequest sr = SwapRequest.builder()
+                 .requestType("ADMIN_DIRECT")
+                .requesterStaff(requester)
+                .targetStaff(target)
+                .originalShiftDate(dto.getOriginalShiftDate())
+                .originalShift(dto.getOriginalShift())
+                .requestedShiftDate(dto.getRequestedShiftDate())
+                .requestedShift(dto.getRequestedShift())
+                .peerApprovalStatus("NOT_REQUIRED")
+                .adminStatus("PENDING")
+                .reason(dto.getReason())
+                .requestMeta(dto.getRequestMeta())
+                .build();
+
+        SwapRequest saved = swapRepo.save(sr);
+        auditRepo.save(buildAudit(saved, "CREATED", requester.getUser().getId(), "Admin-directed swap"));
+
+        notificationService.createNotificationForRole("ADMIN", "New admin-directed swap request", "SWAP_REQUEST");
+
+        return toDto(saved);
+    }
+
+    @Override
+    public SwapRequestDTO createIndirectSwap(DirectSwapCreateDTO dto) {
+        staff requester = staffRepository.findById(dto.getRequesterStaffId()).orElseThrow(() -> new RuntimeException("Requester not found"));
+
+        SwapRequest sr = SwapRequest.builder()
+                .requestType("INDIRECT")
+                .requesterStaff(requester)
+                .targetStaff(null)
+                .originalShiftDate(dto.getOriginalShiftDate())
+                .originalShift(dto.getOriginalShift())
+                .requestedShiftDate(dto.getRequestedShiftDate())
+                .requestedShift(dto.getRequestedShift())
+                .peerApprovalStatus("NOT_REQUIRED")
+                .adminStatus("PENDING")
+                .reason(dto.getReason())
+                .requestMeta(dto.getRequestMeta())
+                .build();
+
+        SwapRequest saved = swapRepo.save(sr);
+        auditRepo.save(buildAudit(saved, "CREATED", requester.getUser().getId(), "Indirect swap request"));
+
+        notificationService.createNotificationForRole("ADMIN", "Indirect swap request awaiting allocation", "SWAP_REQUEST");
+
+        return toDto(saved);
+    }
+
+    //direct rq approvel
+    @Override
+    public SwapRequestDTO approvePeer(Long swapRequestId, Long approverUserId) {
+        SwapRequest sr = swapRepo.findById(swapRequestId).orElseThrow(() -> new RuntimeException("Swap request not found"));
+        if (!"DIRECT".equals(sr.getRequestType())) {
+            throw new RuntimeException("Peer approval only valid for DIRECT requests");
+        }
+        sr.setPeerApprovalStatus("APPROVED");
+        auditRepo.save(buildAudit(sr, "PEER_APPROVED", approverUserId, "Peer approved"));
+
+        // Auto-apply
+        applySwapToRoster(sr);
+        sr.setAdminStatus("AUTO_APPLIED");
+        SwapRequest saved = swapRepo.save(sr);
+
+        notificationService.createNotification(sr.getRequesterStaff().getUser().getId(), "Your swap was peer-approved and applied", "SWAP_APPLIED");
+        notificationService.createNotification(sr.getTargetStaff().getUser().getId(), "You approved a swap which has been applied", "SWAP_APPLIED");
+
+        return toDto(saved);
+    }
+
+    //peer - reject
+    @Override
+    public SwapRequestDTO rejectByPeer(Long swapRequestId, Long approverUserId) {
+
+        SwapRequest sr = swapRepo.findById(swapRequestId)
+                .orElseThrow(() -> new RuntimeException("Swap request not found"));
+
+        // --- BUSINESS RULES (can be extended later) ---
+        sr.setPeerApprovalStatus("REJECTED");
+        sr.setAdminStatus("REJECTED");
+
+        auditRepo.save(
+                buildAudit(sr, "PEER_REJECTED", approverUserId, "Peer rejected")
+        );
+
+        SwapRequest saved = swapRepo.save(sr);
+
+        notificationService.createNotification(
+                sr.getRequesterStaff().getUser().getId(),
+                "Your swap request was rejected by peer",
+                "SWAP_REJECTED"
+        );
+
+        return toDto(saved);
+    }
+
+    //admin rq approvel and reject
+    @Override
+    public SwapRequestDTO approveByAdmin(Long swapRequestId, Long approverUserId) {
+        SwapRequest sr = swapRepo.findById(swapRequestId).orElseThrow(() -> new RuntimeException("Swap request not found"));
+        sr.setAdminStatus("APPROVED");
+        auditRepo.save(buildAudit(sr, "ADMIN_APPROVED", approverUserId, "Admin approved"));
+
+        applySwapToRoster(sr);
+        sr.setAdminStatus("AUTO_APPLIED");
+        SwapRequest saved = swapRepo.save(sr);
+
+        notificationService.createNotification(sr.getRequesterStaff().getUser().getId(), "Your swap request was approved and applied", "SWAP_APPLIED");
+        if (sr.getTargetStaff() != null) {
+            notificationService.createNotification(sr.getTargetStaff().getUser().getId(), "A swap request involving you was approved & applied", "SWAP_APPLIED");
+        }
+
+        return toDto(saved);
+    }
+
+    @Override
+    public SwapRequestDTO rejectByAdmin(Long swapRequestId, Long approverUserId) {
+        SwapRequest sr = swapRepo.findById(swapRequestId).orElseThrow(() -> new RuntimeException("Swap request not found"));
+        sr.setAdminStatus("REJECTED");
+        auditRepo.save(buildAudit(sr, "ADMIN_REJECTED", approverUserId, "Admin rejected"));
+        SwapRequest saved = swapRepo.save(sr);
+
+        notificationService.createNotification(sr.getRequesterStaff().getUser().getId(), "Your swap request was rejected", "SWAP_REJECTED");
+        return toDto(saved);
+    }
+
+    private SwapAuditLog buildAudit(SwapRequest sr, String action, Long actorUserId, String notes) {
+        AppUser actor = actorUserId == null ? null : appUserRepository.findById(actorUserId).orElse(null);
+        return SwapAuditLog.builder()
+                .swapRequest(sr)
+                .action(action)
+                .actor(actor)
+                .notes(notes)
+                .build();
+    }
+
+    private SwapRequestDTO toDto(SwapRequest sr) {
+        SwapRequestDTO dto = new SwapRequestDTO();
+        dto.setId(sr.getId());
+        dto.setRequestType(sr.getRequestType());
+        dto.setRequesterStaffId(sr.getRequesterStaff().getId());
+        dto.setTargetStaffId(sr.getTargetStaff() != null ? sr.getTargetStaff().getId() : null);
+        dto.setOriginalShiftDate(sr.getOriginalShiftDate());
+        dto.setOriginalShift(sr.getOriginalShift());
+        dto.setRequestedShiftDate(sr.getRequestedShiftDate());
+        dto.setRequestedShift(sr.getRequestedShift());
+        dto.setPeerApprovalStatus(sr.getPeerApprovalStatus());
+        dto.setAdminStatus(sr.getAdminStatus());
+        dto.setReason(sr.getReason());
+        dto.setRequestMeta(sr.getRequestMeta());
+        dto.setCreatedAt(sr.getCreatedAt());
+        dto.setUpdatedAt(sr.getUpdatedAt());
+        return dto;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void applySwapToRoster(SwapRequest sr) {
+
+        LocalDate date1 = sr.getOriginalShiftDate();
+        LocalDate date2 = sr.getRequestedShiftDate();
+
+        int month = date1.getMonthValue();
+        int year = date1.getYear();
+
+        List<DutyRoster> rosters = rosterRepository.findAll().stream()
+                .filter(r -> r.getMonth() == month && r.getYear() == year)
+                .collect(Collectors.toList());
+
+        for (DutyRoster roster : rosters) {
+
+            Map<String, Object> data = roster.getData();
+            if (data == null) continue;
+
+            String key1 = date1.toString();
+            String key2 = date2.toString();
+
+            if (!data.containsKey(key1) || !data.containsKey(key2)) continue;
+
+            Map<String, Object> shifts1 = (Map<String, Object>) data.get(key1);
+            Map<String, Object> shifts2 = (Map<String, Object>) data.get(key2);
+
+            if (shifts1 == null || shifts2 == null) continue;
+
+            // REMOVE requester from original shift
+            removeStaffFromShift(shifts1, sr.getOriginalShift(), sr.getRequesterStaff().getId());
+
+            // If target exists → two-way swap
+            if (sr.getTargetStaff() != null) {
+                removeStaffFromShift(shifts2, sr.getRequestedShift(), sr.getTargetStaff().getId());
+
+                addStaffToShift(shifts1, sr.getOriginalShift(), sr.getTargetStaff());
+                addStaffToShift(shifts2, sr.getRequestedShift(), sr.getRequesterStaff());
+            }
+            else {
+                // INDIRECT or ADMIN_DIRECT with no target swap back
+                addStaffToShift(shifts2, sr.getRequestedShift(), sr.getRequesterStaff());
+            }
+
+            roster.setData(data);
+            rosterRepository.save(roster);
+
+            auditRepo.save(buildAudit(sr, "AUTO_APPLIED", null,
+                    "Applied to roster id=" + roster.getId()));
+
+            return;
+        }
+
+        throw new RuntimeException("No matching roster found to apply swap");
+    }
+
+
+    @SuppressWarnings("unchecked")
+    private void removeStaffFromShift(Map<String, Object> shifts, String shiftName, Long staffId) {
+        String key = shiftName.toLowerCase();
+        List<Map<String, Object>> list = (List<Map<String, Object>>) shifts.getOrDefault(key, new ArrayList<>());
+        List<Map<String, Object>> filtered = list.stream()
+                .filter(m -> {
+                    Object idObj = m.get("id");
+                    if (idObj instanceof Integer) {
+                        return !Objects.equals(((Integer) idObj).longValue(), staffId);
+                    } else if (idObj instanceof Long) {
+                        return !Objects.equals((Long) idObj, staffId);
+                    }
+                    return true;
+                })
+                .collect(Collectors.toList());
+        shifts.put(key, filtered);
+    }
+
+    private void addStaffToShift(Map<String, Object> shifts, String shiftName, staff s) {
+        String key = shiftName.toLowerCase();
+        List<Map<String, Object>> list = (List<Map<String, Object>>) shifts.getOrDefault(key, new ArrayList<>());
+        Map<String, Object> entry = new HashMap<>();
+        entry.put("id", s.getId().intValue());
+        entry.put("name", s.getUser().getFullName());
+        list.add(entry);
+        shifts.put(key, list);
+    }
+
+    @Override
+    public SwapRequestDTO getById(Long id) {
+        return swapRepo.findById(id).map(this::toDto).orElseThrow(() -> new RuntimeException("Swap request not found"));
+    }
+
+    @Override
+    public List<SwapRequestDTO> getAll() {
+        return swapRepo.findAll().stream().map(this::toDto).collect(Collectors.toList());
+    }
+}
+
+
+
+for now this system allow for users to make 3 types of swap rqs.
+here is the 3 types of reqests 
+1. Direct Swap (Peer-to-Peer Agreement)
+
+This is a mutual exchange between two staff members.
+A user can directly select another staff member and propose a swap.
+If the second staff member consents, the system should automatically update both shift allocations.
+This workflow supports cross-day swaps as well as same-day shift-time changes.
+In direct swapping, no admin involvement is required. If User A sends a request to User B, then User B can either approve or reject the request. If User B approves, the duty roster should automatically update, and the duties for both users should be swapped immediately.
+
+2. Admin-Approved Duty Change Request
+
+A user can initiate a duty change request by selecting a target staff member and specifying the shift adjustments.
+The request is routed to the ward administration for review and approval.
+Upon approval, the system updates the roster accordingly.
+This pathway also supports cross-day and same-day shift changes.
+
+3. Indirect Swap (Admin-Driven Allocation)
+
+In this scenario, the user does not select another staff member.
+Instead, the user submits a request to change their duty—for either another day or a different shift on the same day—based on general staff availability.
+In indirect swapping, the user cannot choose another specific user. The user can only submit a request stating that they want to swap their duty on a particular date.
+The admin will then review these requests. The admin can either reject the request or approve it by selecting suitable shifts and assigning them to the user.
+
+now i need to build the frontend actions for get those request and accept or reject after accept or reject 
+that swapped duties should update on the duty roster.
+currently  duty roster page has code for getting swap rq from users
+her is the services for swap rq actions,
+import api from "./api";
+
+
+// CREATE SWAPS
+
+
+// Direct peer-to-peer swap (requires targetStaffId)
+function directSwap(dto) {
+  return api.post("/swaps/direct", dto);
+}
+
+// Admin-requested direct swap (user selects target, admin must approve)
+function adminRequest(dto) {
+  return api.post("/swaps/admin-direct", dto);
+}
+
+// Indirect request (admin assigns later)
+function indirectRequest(dto) {
+  return api.post("/swaps/indirect", dto);
+}
+
+// ──────────────────────────────────────────────
+// READ OPERATIONS
+// ──────────────────────────────────────────────
+
+function getAll() {
+  return api.get("/swaps");
+}
+
+function get(id) {
+  return api.get(`/swaps/${id}`);
+}
+
+// ──────────────────────────────────────────────
+// APPROVAL WORKFLOW
+// ──────────────────────────────────────────────
+
+// Peer approval
+function peerApprove(id, approverUserId) {
+  return api.post(`/swaps/${id}/peer-approve?approverUserId=${approverUserId}`);
+}
+
+// Peer rejection
+function peerReject(id, approverUserId) {
+  return api.post(`/swaps/${id}/peer-reject?approverUserId=${approverUserId}`);
+}
+
+// Admin approval
+function adminApprove(id, approverUserId) {
+  return api.post(`/swaps/${id}/admin-approve?approverUserId=${approverUserId}`);
+}
+
+// Admin rejection
+function adminReject(id, approverUserId) {
+  return api.post(`/swaps/${id}/admin-reject?approverUserId=${approverUserId}`);
+}
+
+// ──────────────────────────────────────────────
+// EXPORT
+// ──────────────────────────────────────────────
+
+export default {
+  directSwap,
+  adminRequest, 
+  indirectRequest,
+  getAll,
+  get,
+  peerApprove,
+  peerReject,
+  adminApprove,
+  adminReject,
+};
+
+so far the system get the swap rq and shows swap rq submitted now i need to build is,
+system should filter the swap rqs and admin-approvel shows to the admin and when admin approv the req it should update in the roster
+the direct rqs shows to specific user then user can check it and accept it after that it also update in the roster
+finally the inderect one shows to pending list for admin admin can aproove oor not 
+

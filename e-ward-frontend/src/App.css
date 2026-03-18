@@ -1,0 +1,100 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.swap-card {
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+.action-buttons {
+  margin-top: 10px;
+}
+
+.btn-approve {
+  background-color: #4CAF50;
+  color: white;
+  margin-right: 5px;
+  padding: 5px 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-reject {
+  background-color: #f44336;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.active-tab {
+  font-weight: bold;
+  border-bottom: 2px solid #4CAF50;
+}
+
+
+.extra-small { font-size: 0.75rem; }
+.transition-all { transition: all 0.2s ease-in-out; }
+
+/* Table Hover Shadows */
+.table-hover tbody tr:hover {
+  background-color: #fcfcfc !important;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.02);
+}
+
+/* Custom button group for actions */
+.btn-white {
+  background: white;
+  color: #6c757d;
+}
+.btn-white:hover {
+  background: #f8f9fa;
+}
+
+/* Modal styling */
+.modal-content {
+  animation: modalIn 0.3s ease-out;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
