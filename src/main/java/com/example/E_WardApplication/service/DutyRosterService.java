@@ -15,6 +15,7 @@ public interface DutyRosterService {
     void delete(Long id);
     boolean staffHasSlot(Long staffId, LocalDate date, String shift);
     List<Map<String, String>> findSlotsForStaffInMonth(Long staffId, int month, int year);
+    List<Map<String, String>> findSlotsForStaffInRoster(Long staffId, Long rosterId);
 
 
 }

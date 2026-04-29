@@ -69,4 +69,5 @@ public class GlobalExceptionHandler {
         body.put("path", ""); // optional - could be set from request if injected
         return new ResponseEntity<>(body, new HttpHeaders(), status);
     }
+
 }

@@ -56,9 +56,14 @@ function adminReject(id, approverUserId) {
 }
 
 // FETCH TARGET STAFF DUTIES
-function getStaffSlots(month, year, staffId) {
+/*function getStaffSlots(month, year, staffId) {
   return api.get(`/rosters/${month}/${year}/staff/${staffId}/slots`);
+}*/
+
+function getStaffSlots(rosterId, year, staffId) {
+  return api.get(`/rosters/${rosterId}/${year}/staff/${staffId}/slots`);
 }
+
 // ──────────────────────────────────────────────
 // EXPORT
 // ──────────────────────────────────────────────

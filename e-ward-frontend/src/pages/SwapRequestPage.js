@@ -56,14 +56,14 @@ const SwapRequestPage = () => {
 const receivedRequests = requests.filter(r =>
   r.requestType === "DIRECT" &&
   r.peerApprovalStatus === "PENDING" &&
-  r.targetName === currentUserName  // match by name
+  String(r.targetStaffId) === String(currentUserId)
+  //r.targetName === currentUserName  // match by name
 );
 
 // 4. MY SENT: Anything you started
 const submittedRequests = requests.filter(r =>
-  r.requesterName === currentUserName  // match by name
+  String(r.requesterStaffId) === String(currentUserId) 
 );
-
 
 
   // 5. HISTORY: Finished items

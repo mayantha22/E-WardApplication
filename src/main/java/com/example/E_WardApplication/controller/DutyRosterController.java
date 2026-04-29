@@ -107,15 +107,27 @@ public class DutyRosterController {
     }
 
     // NEW - GRAB THE STAFFSHIFT
-    @GetMapping("/{month}/{year}/staff/{staffId}/slots")
+//    @GetMapping("/{month}/{year}/staff/{staffId}/slots")
+//    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
+//    public ResponseEntity<List<Map<String,String>>> getStaffSlotsForMonth(
+//            @PathVariable int month,
+//            @PathVariable int year,
+//            @PathVariable Long staffId) {
+//
+//        // iterate rosters and build a list of { date, shift } where staffId is assigned
+//        List<Map<String, String>> slots = service.findSlotsForStaffInMonth(staffId, month, year);
+//        return ResponseEntity.ok(slots);
+//    }
+
+    // ✅ Change {month} to {rosterId}
+    @GetMapping("/{rosterId}/{year}/staff/{staffId}/slots")
     @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
     public ResponseEntity<List<Map<String,String>>> getStaffSlotsForMonth(
-            @PathVariable int month,
+            @PathVariable Long rosterId,
             @PathVariable int year,
             @PathVariable Long staffId) {
 
-        // iterate rosters and build a list of { date, shift } where staffId is assigned
-        List<Map<String, String>> slots = service.findSlotsForStaffInMonth(staffId, month, year);
+        List<Map<String, String>> slots = service.findSlotsForStaffInRoster(staffId, rosterId);
         return ResponseEntity.ok(slots);
     }
 
