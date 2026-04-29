@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import swapService from "../services/swapService";
+import staffService from "../services/staffService";
 import { useAuth } from "../context/AuthContext";
 import SwapRequestList from "../components/SwapRequestList";
 import { toast } from "react-toastify";
@@ -9,6 +10,7 @@ const SwapRequestPage = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("");
+  const [myStaffId, setMyStaffId] = useState(null);
 
   const fetchRequests = async () => {
     setLoading(true);
@@ -24,6 +26,14 @@ const SwapRequestPage = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (user?.id) {
+      staffService.getByUserId(user.id)
+        .then(data => setMyStaffId(data.id))
+        .catch(err => console.error("Failed to fetch staff ID", err));
+    }
+  }, [user]);
 
   useEffect(() => {
     if (user) {
@@ -52,18 +62,28 @@ const SwapRequestPage = () => {
 
  // 3. RECEIVED (FOR STAFF): Only requests where CURRENT user is the target
 
-  // 3. RECEIVED: Only requests where CURRENT user is the target
-const receivedRequests = requests.filter(r =>
-  r.requestType === "DIRECT" &&
-  r.peerApprovalStatus === "PENDING" &&
-  String(r.targetStaffId) === String(currentUserId)
-  //r.targetName === currentUserName  // match by name
-);
+//   // 3. RECEIVED: Only requests where CURRENT user is the target
+// const receivedRequests = requests.filter(r =>
+//   r.requestType === "DIRECT" &&
+//   r.peerApprovalStatus === "PENDING" &&
+//   String(r.targetStaffId) === String(currentUserId)
+//   //r.targetName === currentUserName  // match by name
+// );
 
-// 4. MY SENT: Anything you started
-const submittedRequests = requests.filter(r =>
-  String(r.requesterStaffId) === String(currentUserId) 
-);
+// // 4. MY SENT: Anything you started
+// const submittedRequests = requests.filter(r =>
+//   String(r.requesterStaffId) === String(currentUserId) 
+// );
+
+ const receivedRequests = requests.filter(r =>
+    r.requestType === "DIRECT" &&
+    r.peerApprovalStatus === "PENDING" &&
+    String(r.targetStaffId) === String(myStaffId)  // ✅ staff ID vs staff ID
+  );
+
+  const submittedRequests = requests.filter(r =>
+    String(r.requesterStaffId) === String(myStaffId) // ✅ staff ID vs staff ID
+  );
 
 
   // 5. HISTORY: Finished items
