@@ -74,24 +74,54 @@ export default function DutyRosterPage() {
     }
   };
 
-  const handleTargetStaffChange = async (selectedOption) => {
-    setSwapData({ ...swapData, toStaff: selectedOption, requestedDate: "", requestedShift: "" });
-    setAvailableTargetSlots([]);
-    if (selectedOption) {
-      try {
-        const res = await swapService.getStaffSlots(month, year, selectedOption.value);
-        const slots = res.data || res;
-        if (Array.isArray(slots)) {
-          setAvailableTargetSlots(slots);
-        } else {
-          setAvailableTargetSlots([]);
-        }
-      } catch (err) {
-        setAvailableTargetSlots([]);
-        toast.error("Could not fetch target staff's duties.");
+  // const handleTargetStaffChange = async (selectedOption) => {
+  //   setSwapData({ ...swapData, toStaff: selectedOption, requestedDate: "", requestedShift: "" });
+  //   setAvailableTargetSlots([]);
+  //   if (selectedOption) {
+  //     try {
+  //       const res = await swapService.getStaffSlots(month, year, selectedOption.value);
+  //       const slots = res.data || res;
+  //       if (Array.isArray(slots)) {
+  //         setAvailableTargetSlots(slots);
+  //       } else {
+  //         setAvailableTargetSlots([]);
+  //       }
+  //     } catch (err) {
+  //       setAvailableTargetSlots([]);
+  //       toast.error("Could not fetch target staff's duties.");
+  //     }
+  //   }
+  // };
+
+//   
+
+const handleTargetStaffChange = async (selectedOption) => {
+  setSwapData({ ...swapData, toStaff: selectedOption, requestedDate: "", requestedShift: "" });
+  setAvailableTargetSlots([]);
+
+  if (selectedOption) {
+    try {
+      // ✅ Find roster that actually contains swapData.date
+      const matchingRoster = rosters.find(
+        (r) => r.data && Object.keys(r.data).includes(swapData.date)
+      );
+
+      console.log("matchingRoster:", matchingRoster); // should now find it
+
+      if (!matchingRoster) {
+        toast.error("No roster found containing your shift date.");
+        return;
       }
+
+      const res = await swapService.getStaffSlots(matchingRoster.id, year, selectedOption.value);
+      const slots = res.data || res;
+      setAvailableTargetSlots(Array.isArray(slots) ? slots : []);
+    } catch (err) {
+      setAvailableTargetSlots([]);
+      toast.error("Could not fetch target staff's duties.");
     }
-  };
+  }
+};
 
   function handleAssignmentChange(index, field, value) {
     const copy = [...assignments];

@@ -143,6 +143,37 @@ public class DutyRosterServiceImpl implements DutyRosterService {
         return result;
     }
 
+    //FILTER SLOTS BY ROSTER ID
+    @Override
+    public List<Map<String, String>> findSlotsForStaffInRoster(Long staffId, Long rosterId) {
+        List<Map<String, String>> result = new ArrayList<>();
+
+        DutyRoster roster = repository.findById(rosterId)
+                .orElseThrow(() -> new RuntimeException("Roster not found"));
+
+        Map<String, Object> data = roster.getData();
+        if (data == null) return result;
+
+        for (String dateKey : data.keySet()) {
+            Map<String, Object> shifts = (Map<String, Object>) data.get(dateKey);
+            if (shifts == null) continue;
+            for (String shiftName : Arrays.asList("morning", "evening", "night")) {
+                List<Map<String, Object>> list = (List<Map<String, Object>>) shifts.getOrDefault(shiftName, new ArrayList<>());
+                for (Map<String, Object> entry : list) {
+                    Object idObj = entry.get("id");
+                    long idVal = idObj instanceof Integer ? ((Integer) idObj).longValue() : (Long) idObj;
+                    if (Objects.equals(idVal, staffId)) {
+                        Map<String, String> m = new HashMap<>();
+                        m.put("date", dateKey);
+                        m.put("shift", shiftName);
+                        result.add(m);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
 
     private DutyRosterDTO toDto(DutyRoster d) {
         DutyRosterDTO dto = new DutyRosterDTO();

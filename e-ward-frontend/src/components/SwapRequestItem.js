@@ -30,7 +30,11 @@ const SwapRequestItem = ({ request, refresh, activeTab, currentUserId }) => {
     }
   };
 
-  const preferredSlots = request.requestMeta?.preferredSlots || [];
+  //const preferredSlots = request.requestMeta?.preferredSlots || [];
+
+ const preferredSlots = request.requestMeta?.preferredSlots 
+  || request.preferredSlots  // sometimes nested differently
+  || [];
 
   // Hide action buttons if viewing own sent requests
   const showActions =
