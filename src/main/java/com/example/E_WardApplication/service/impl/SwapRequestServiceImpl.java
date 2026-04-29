@@ -383,6 +383,8 @@ public class SwapRequestServiceImpl implements SwapRequestService {
 //        rosterRepository.saveAndFlush(roster); // Flush ensures it hits DB immediately
 //    }
 
+//
+
     private void applySwapToRoster(SwapRequest sr) {
         LocalDate date1 = sr.getOriginalShiftDate();
         LocalDate date2 = sr.getRequestedShiftDate();
@@ -390,59 +392,36 @@ public class SwapRequestServiceImpl implements SwapRequestService {
         DutyRoster roster = rosterRepository.findAll().stream()
                 .filter(r -> r.getMonth() == date1.getMonthValue() && r.getYear() == date1.getYear())
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("No matching roster found for " + date1.getMonthValue()));
+                .orElseThrow(() -> new RuntimeException("No matching roster found"));
 
         Map<String, Object> data = new HashMap<>(roster.getData());
         String key1 = date1.toString();
         String key2 = date2.toString();
 
-        Map<String, Object> shifts1 = new HashMap<>((Map<String, Object>) data.get(key1));
-        Map<String, Object> shifts2 = new HashMap<>((Map<String, Object>) data.get(key2));
+        boolean sameDay = key1.equals(key2);
 
-        // 1. Remove requester from original slot
-        removeStaffFromShift(shifts1, sr.getOriginalShift(), sr.getRequesterStaff().getId());
+        // ✅ If same day, use ONE shared map — not two separate copies
+        Map<String, Object> shifts1 = new HashMap<>((Map<String, Object>) data.get(key1));
+        Map<String, Object> shifts2 = sameDay ? shifts1 : new HashMap<>((Map<String, Object>) data.get(key2));
 
         if (sr.getTargetStaff() != null) {
-            // 2. Remove target from requested slot
+            removeStaffFromShift(shifts1, sr.getOriginalShift(), sr.getRequesterStaff().getId());
             removeStaffFromShift(shifts2, sr.getRequestedShift(), sr.getTargetStaff().getId());
-
-            // ✅ CHECK: Is target already in original slot?
-            if (!dutyRosterService.staffHasSlot(sr.getTargetStaff().getId(), date1, sr.getOriginalShift())) {
-                addStaffToShift(shifts1, sr.getOriginalShift(), sr.getTargetStaff());
-            } else {
-                throw new RuntimeException(
-                        sr.getTargetStaff().getUser().getFullName() +
-                                " is already assigned to " + date1 + " " + sr.getOriginalShift()
-                );
-            }
-
-            // ✅ CHECK: Is requester already in requested slot?
-            if (!dutyRosterService.staffHasSlot(sr.getRequesterStaff().getId(), date2, sr.getRequestedShift())) {
-                addStaffToShift(shifts2, sr.getRequestedShift(), sr.getRequesterStaff());
-            } else {
-                throw new RuntimeException(
-                        sr.getRequesterStaff().getUser().getFullName() +
-                                " is already assigned to " + date2 + " " + sr.getRequestedShift()
-                );
-            }
-
+            addStaffToShift(shifts1, sr.getOriginalShift(), sr.getTargetStaff());
+            addStaffToShift(shifts2, sr.getRequestedShift(), sr.getRequesterStaff());
         } else {
-            // One-way: INDIRECT or ADMIN_DIRECT
-            // ✅ CHECK: Is requester already in requested slot?
-            if (!dutyRosterService.staffHasSlot(sr.getRequesterStaff().getId(), date2, sr.getRequestedShift())) {
-                addStaffToShift(shifts2, sr.getRequestedShift(), sr.getRequesterStaff());
-            } else {
-                throw new RuntimeException(
-                        sr.getRequesterStaff().getUser().getFullName() +
-                                " is already assigned to " + date2 + " " + sr.getRequestedShift()
-                );
-            }
+            removeStaffFromShift(shifts1, sr.getOriginalShift(), sr.getRequesterStaff().getId());
+            addStaffToShift(shifts2, sr.getRequestedShift(), sr.getRequesterStaff());
         }
 
         data.put(key1, shifts1);
-        data.put(key2, shifts2);
+        if (!sameDay) data.put(key2, shifts2);
+
+        roster.setData(null);
         roster.setData(data);
         rosterRepository.saveAndFlush(roster);
+
+        auditRepo.save(buildAudit(sr, "AUTO_APPLIED", null, "Applied to roster id=" + roster.getId()));
     }
 
     @SuppressWarnings("unchecked")
