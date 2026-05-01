@@ -64,6 +64,10 @@ function getStaffSlots(rosterId, year, staffId) {
   return api.get(`/rosters/${rosterId}/${year}/staff/${staffId}/slots`);
 }
 
+function assignIndirectSlot(id, dto) {
+  return api.patch(`/swaps/${id}/assign-indirect`, dto);
+}
+
 // ──────────────────────────────────────────────
 // EXPORT
 // ──────────────────────────────────────────────
@@ -78,5 +82,6 @@ export default {
   peerReject,
   adminApprove,
   adminReject,
-  getStaffSlots
+  getStaffSlots,
+  assignIndirectSlot
 };

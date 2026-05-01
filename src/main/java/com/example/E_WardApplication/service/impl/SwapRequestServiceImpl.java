@@ -461,4 +461,29 @@ public class SwapRequestServiceImpl implements SwapRequestService {
     public List<SwapRequestDTO> getAll() {
         return swapRepo.findAll().stream().map(this::toDto).collect(Collectors.toList());
     }
+
+    @Override
+    public SwapRequestDTO assignIndirectSlot(Long swapRequestId, LocalDate requestedShiftDate, String requestedShift, Long targetStaffId) {
+        SwapRequest sr = swapRepo.findById(swapRequestId)
+                .orElseThrow(() -> new RuntimeException("Swap request not found"));
+
+        if (!"INDIRECT".equals(sr.getRequestType())) {
+            throw new RuntimeException("This is not an indirect swap request");
+        }
+
+        sr.setRequestedShiftDate(requestedShiftDate);
+        sr.setRequestedShift(requestedShift);
+
+        if (targetStaffId != null) {
+            staff target = staffRepository.findById(targetStaffId)
+                    .orElseThrow(() -> new RuntimeException("Target staff not found"));
+            sr.setTargetStaff(target);
+        }
+
+        SwapRequest saved = swapRepo.save(sr);
+        auditRepo.save(buildAudit(saved, "INDIRECT_ASSIGNED", null,
+                "Admin assigned slot: " + requestedShiftDate + " " + requestedShift));
+
+        return toDto(saved);
+    }
 }

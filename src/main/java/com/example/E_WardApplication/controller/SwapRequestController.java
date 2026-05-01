@@ -2,13 +2,19 @@ package com.example.E_WardApplication.controller;
 
 import com.example.E_WardApplication.dto.DirectSwapCreateDTO;
 import com.example.E_WardApplication.dto.SwapRequestDTO;
+import com.example.E_WardApplication.entity.SwapRequest;
+import com.example.E_WardApplication.entity.staff;
+import com.example.E_WardApplication.repository.StaffRepository;
+import com.example.E_WardApplication.repository.SwapRequestRepository;
 import com.example.E_WardApplication.service.SwapRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/swaps")
@@ -17,6 +23,8 @@ import java.util.List;
 public class SwapRequestController {
 
     private final SwapRequestService service;
+    private final SwapRequestRepository swapRepo;
+    private final StaffRepository staffRepository;
 
     @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
     @PostMapping("/direct")
@@ -84,6 +92,31 @@ public class SwapRequestController {
 
         // Fallback to returning everything (or you can return empty list for security)
         return ResponseEntity.ok(service.getAll());
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/{id}/assign-indirect")
+    public ResponseEntity<SwapRequestDTO> assignIndirect(
+            @PathVariable Long id,
+            @RequestBody Map<String, Object> body) {
+
+        SwapRequest sr = swapRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Not found"));
+
+        // Set the assigned slot
+        sr.setRequestedShiftDate(LocalDate.parse((String) body.get("requestedShiftDate")));
+        sr.setRequestedShift((String) body.get("requestedShift"));
+
+        // Optionally assign target staff
+        if (body.get("targetStaffId") != null && !body.get("targetStaffId").toString().isEmpty()) {
+            Long staffId = Long.parseLong(body.get("targetStaffId").toString());
+            staff target = staffRepository.findById(staffId)
+                    .orElseThrow(() -> new RuntimeException("Staff not found"));
+            sr.setTargetStaff(target);
+        }
+
+        swapRepo.save(sr);
+        return ResponseEntity.ok(service.getById(id));
     }
 
 

@@ -3,6 +3,7 @@ package com.example.E_WardApplication.service;
 import com.example.E_WardApplication.dto.DirectSwapCreateDTO;
 import com.example.E_WardApplication.dto.SwapRequestDTO;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface SwapRequestService {
@@ -22,4 +23,6 @@ public interface SwapRequestService {
 
     SwapRequestDTO getById(Long id);
     List<SwapRequestDTO> getAll();
+
+    SwapRequestDTO assignIndirectSlot(Long swapRequestId, LocalDate requestedShiftDate, String requestedShift, Long targetStaffId);
 }
